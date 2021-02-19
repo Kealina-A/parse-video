@@ -1,65 +1,63 @@
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
+import org.bytedeco.javacv.FrameGrabber;
 import org.bytedeco.javacv.Java2DFrameConverter;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import org.bytedeco.javacv.FrameGrabber.Exception;
 
 public class VideoUtil {
 
-    public static void main(String[] args) {
-        //1.要读取的视频文件路径
-        String videoPath = "./test.mp4";
-        //2.图片要保存的目录位置
-        String picPath = "./pic/";
+    /**
+     * 将视频文件帧处理并以“jpg”格式进行存储。
+     * 依赖FrameToBufferedImage方法：将frame转换为bufferedImage对象
+     *
+     * @param videoFileName（视频文件的路径）
+     */
+    public static void grabberVideoFramer(String videoFileName, String picPath) {
+        //Frame对象
+        Frame frame = null;
+        //标识
+        int flag = 0;
 
-        File video = new File(videoPath);
-        getVideoPic(video, picPath);
+        FFmpegFrameGrabber fFmpegFrameGrabber = new FFmpegFrameGrabber(videoFileName);
+        try {
+            //开始转换
+            fFmpegFrameGrabber.start();
+            int ftp = fFmpegFrameGrabber.getLengthInFrames();
+            while (flag <= ftp) {
+                //文件绝对路径+名字
+                String fileName = picPath + flag + ".jpg";
+                //文件储存对象
+                File outPut = new File(fileName);
+                //获取帧
+                try {
+                    frame = fFmpegFrameGrabber.grabImage();
+                } catch (FrameGrabber.Exception e) {
+                    e.printStackTrace();
+                }
+                //根据条件生产图片flag值可以任意修改，根据1s=24帧或者30帧
+                if (frame != null) {
+                    BufferedImage bufferedImage = frameToBufferedImage(frame);
+                    PictureUtil.reverseColor(bufferedImage);
+                    ImageIO.write(bufferedImage, "jpg", outPut);
+                    System.out.println("保存成功 "+fileName);
+                }
+                flag++;
+            }
+            //  转换结束
+            fFmpegFrameGrabber.stop();
+        } catch (IOException ignored) { }
     }
 
     /**
-     * 根据读取到的视频文件，获取视频中的每一帧图片
-     * @param video 视频文件
-     * @param picPath 图片的保存路径
+     * 创建BufferedImage对象
      */
-    public static void getVideoPic(File video,String picPath){
-        //1.根据一个视频文件，创建一个按照视频中每一帧进行抓取图片的抓取对象
-        FFmpegFrameGrabber ff = new FFmpegFrameGrabber(video);
-        try {
-            ff.start();
-            //抓每一帧图片
-            //2.先知道这个视频一共有多少帧
-            int length = ff.getLengthInFrames();
-//            System.out.println(length);
-            //3.读取视频中每一帧图片
-            Frame frame = null;
-            for(int i=0;i<length;i++){
-                frame = ff.grabFrame();
-//        System.out.println(frame);
-                if(frame.image == null){
-//                    System.out.println("空"+i);
-                    continue;
-                }
-                //将获取的帧，存储为图片
-                Java2DFrameConverter converter = new Java2DFrameConverter();//创建一个帧-->图片的转换器
-                BufferedImage image = converter.getBufferedImage(frame);//转换
-                String img = picPath+i+".jpg";
-//                System.out.println(img);
-                File picFile = new File(img);
-                //将图片保存到目标文件中
-                ImageIO.write(image, "jpg", picFile);
-            }
-
-
-            ff.stop();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+    public static BufferedImage frameToBufferedImage(Frame frame) {
+        Java2DFrameConverter converter = new Java2DFrameConverter();
+        return converter.getBufferedImage(frame);
     }
+
 }

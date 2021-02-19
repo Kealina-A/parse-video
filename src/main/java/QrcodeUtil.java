@@ -32,8 +32,7 @@ public class QrcodeUtil {
 //            System.out.println("二维码文本内容：" + result.getText());
             return result.getText();
         } catch (NotFoundException e) {
-//            System.out.println("不可解析文件");
-//            e.printStackTrace();
+            System.out.println("不可解析文件("+path+")");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -41,6 +40,6 @@ public class QrcodeUtil {
     }
 
     public static void main(String[] args) {
-        read("./0.jpg");
+//        read("./pic/141.jpg");
     }
 }
