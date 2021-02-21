@@ -32,7 +32,7 @@ public class QrcodeUtil {
 //            System.out.println("二维码文本内容：" + result.getText());
             return result.getText();
         } catch (NotFoundException e) {
-            System.out.println("不可解析文件("+path+")");
+           // System.out.println("不可解析文件("+path+")");
         } catch (IOException e) {
             e.printStackTrace();
         }
