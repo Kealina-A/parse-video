@@ -1,3 +1,5 @@
+package main.util;
+
 public class HexUtil {
     private static final char[] HEXES = {
             '0', '1', '2', '3',

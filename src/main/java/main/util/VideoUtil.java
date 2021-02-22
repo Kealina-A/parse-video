@@ -1,3 +1,5 @@
+package main.util;
+
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.FrameGrabber;
@@ -41,7 +43,9 @@ public class VideoUtil {
                 //根据条件生产图片flag值可以任意修改，根据1s=24帧或者30帧
                 if (frame != null) {
                     BufferedImage bufferedImage = frameToBufferedImage(frame);
-                    PictureUtil.reverseColor(bufferedImage);
+//                    main.util.PictureUtil.reverseColor(bufferedImage);
+                    // 把水平镜像后的像素矩阵设置回 bufImage
+                    bufferedImage = bufferedImage.getSubimage(0,430,700,600);
                     ImageIO.write(bufferedImage, "jpg", outPut);
                     System.out.println("保存成功 "+fileName);
                 }

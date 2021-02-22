@@ -1,3 +1,5 @@
+package main.util;
+
 import java.awt.image.BufferedImage;
 
 public class PictureUtil {
